@@ -8,7 +8,12 @@ import AnimationIcon from '@mui/icons-material/Animation';
 import ExtensionIcon from '@mui/icons-material/Extension';
 import VolumeUpIcon from '@mui/icons-material/VolumeUp';
 import CodeIcon from '@mui/icons-material/Code';
+import TrendingUpIcon from '@mui/icons-material/TrendingUp';
+import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
+import GroupIcon from '@mui/icons-material/Group';
+import StarIcon from '@mui/icons-material/Star';
 
+// Styled Components
 const HeroSection = styled(Box)(({ theme }) => ({
     minHeight: '100vh',
     display: 'flex',
@@ -94,6 +99,36 @@ const FeatureCard = styled(Card)(({ theme }) => ({
     },
 }));
 
+const StatsCard = styled(Paper)(({ theme }) => ({
+    padding: theme.spacing(4),
+    textAlign: 'center',
+    background: 'rgba(255,255,255,0.15)',
+    backdropFilter: 'blur(10px)',
+    border: '1px solid rgba(255,255,255,0.3)',
+    borderRadius: 3,
+    transition: 'all 0.3s ease',
+    '&:hover': {
+        transform: 'translateY(-5px)',
+        background: 'rgba(255,255,255,0.2)',
+        boxShadow: '0 10px 30px rgba(0,0,0,0.3)',
+    }
+}));
+
+const CTAButton = styled(Button)(({ theme }) => ({
+    background: 'linear-gradient(135deg, #FFD54F, #FFC107)',
+    color: '#1A1A1A',
+    borderRadius: 25,
+    padding: '12px 32px',
+    fontSize: '1.1rem',
+    fontWeight: 700,
+    transition: 'all 0.3s ease',
+    '&:hover': {
+        background: 'linear-gradient(135deg, #FFC107, #FFB300)',
+        transform: 'translateY(-2px)',
+        boxShadow: '0 8px 25px rgba(255, 193, 7, 0.4)',
+    },
+}));
+
 const Home = () => {
     const navigate = useNavigate();
     const { scrollY } = useScroll();
@@ -127,8 +162,30 @@ const Home = () => {
         },
     ];
 
+    const stats = [
+        {
+            number: '100+',
+            label: 'Interactive Lessons',
+            icon: <SchoolIcon sx={{ fontSize: 40, color: '#4CAF50' }} />,
+            color: '#4CAF50'
+        },
+        {
+            number: '50+',
+            label: 'Smart Puzzles',
+            icon: <ExtensionIcon sx={{ fontSize: 40, color: '#2196F3' }} />,
+            color: '#2196F3'
+        },
+        {
+            number: '24/7',
+            label: 'Voice Support',
+            icon: <VolumeUpIcon sx={{ fontSize: 40, color: '#FF5722' }} />,
+            color: '#FF5722'
+        }
+    ];
+
     return (
         <Box>
+            {/* 1. HERO SECTION */}
             <HeroSection>
                 <Container maxWidth="lg">
                     <Grid container spacing={4} alignItems="center" justifyContent="center">
@@ -262,6 +319,7 @@ const Home = () => {
                 </Container>
             </HeroSection>
 
+            {/* 2. FEATURES SECTION */}
             <Container maxWidth="lg" sx={{ py: 8 }}>
                 <motion.div
                     initial={{ opacity: 0, y: 30 }}
@@ -303,7 +361,7 @@ const Home = () => {
                 </motion.div>
             </Container>
 
-            {/* High Contrast Section with Violet/Purple Background */}
+            {/* 3. STATISTICS SECTION */}
             <Box sx={{
                 background: 'linear-gradient(135deg, #6A1B9A 0%, #8E24AA 50%, #AB47BC 100%)',
                 py: 8,
@@ -337,105 +395,87 @@ const Home = () => {
                                 textShadow: '2px 2px 4px rgba(0,0,0,0.3)'
                             }}
                         >
-                            Earn Your Java Mastery
-                        </Typography>
-                        <Typography
-                            variant="h5"
-                            align="center"
-                            sx={{
-                                mb: 6,
-                                color: 'rgba(255,255,255,0.95)',
-                                fontWeight: 500,
-                                maxWidth: 800,
-                                mx: 'auto'
-                            }}
-                        >
-                            Track your progress, earn achievements, and build a solid foundation in Java programming with our comprehensive learning platform.
+                            Learning Statistics
                         </Typography>
 
                         <Grid container spacing={4} justifyContent="center">
-                            <Grid item xs={12} md={4}>
-                                <Paper sx={{
-                                    p: 4,
-                                    textAlign: 'center',
-                                    background: 'rgba(255,255,255,0.15)',
-                                    backdropFilter: 'blur(10px)',
-                                    border: '1px solid rgba(255,255,255,0.3)',
-                                    borderRadius: 3,
-                                    transition: 'all 0.3s ease',
-                                    '&:hover': {
-                                        transform: 'translateY(-5px)',
-                                        background: 'rgba(255,255,255,0.2)',
-                                        boxShadow: '0 10px 30px rgba(0,0,0,0.3)',
-                                    }
-                                }}>
-                                    <Typography variant="h3" sx={{ color: '#4CAF50', mb: 2, fontWeight: 700 }}>
-                                        100+
-                                    </Typography>
-                                    <Typography variant="h6" sx={{ mb: 2, color: '#FFD54F', fontWeight: 600 }}>
-                                        Interactive Lessons
-                                    </Typography>
-                                    <Typography variant="body1" sx={{ color: 'rgba(255,255,255,0.9)' }}>
-                                        Comprehensive lessons covering all Java concepts from basics to advanced topics
-                                    </Typography>
-                                </Paper>
-                            </Grid>
-                            <Grid item xs={12} md={4}>
-                                <Paper sx={{
-                                    p: 4,
-                                    textAlign: 'center',
-                                    background: 'rgba(255,255,255,0.15)',
-                                    backdropFilter: 'blur(10px)',
-                                    border: '1px solid rgba(255,255,255,0.3)',
-                                    borderRadius: 3,
-                                    transition: 'all 0.3s ease',
-                                    '&:hover': {
-                                        transform: 'translateY(-5px)',
-                                        background: 'rgba(255,255,255,0.2)',
-                                        boxShadow: '0 10px 30px rgba(0,0,0,0.3)',
-                                    }
-                                }}>
-                                    <Typography variant="h3" sx={{ color: '#2196F3', mb: 2, fontWeight: 700 }}>
-                                        50+
-                                    </Typography>
-                                    <Typography variant="h6" sx={{ mb: 2, color: '#FFD54F', fontWeight: 600 }}>
-                                        Smart Puzzles
-                                    </Typography>
-                                    <Typography variant="body1" sx={{ color: 'rgba(255,255,255,0.9)' }}>
-                                        Adaptive puzzles that challenge your understanding and reinforce learning
-                                    </Typography>
-                                </Paper>
-                            </Grid>
-                            <Grid item xs={12} md={4}>
-                                <Paper sx={{
-                                    p: 4,
-                                    textAlign: 'center',
-                                    background: 'rgba(255,255,255,0.15)',
-                                    backdropFilter: 'blur(10px)',
-                                    border: '1px solid rgba(255,255,255,0.3)',
-                                    borderRadius: 3,
-                                    transition: 'all 0.3s ease',
-                                    '&:hover': {
-                                        transform: 'translateY(-5px)',
-                                        background: 'rgba(255,255,255,0.2)',
-                                        boxShadow: '0 10px 30px rgba(0,0,0,0.3)',
-                                    }
-                                }}>
-                                    <Typography variant="h3" sx={{ color: '#FF5722', mb: 2, fontWeight: 700 }}>
-                                        24/7
-                                    </Typography>
-                                    <Typography variant="h6" sx={{ mb: 2, color: '#FFD54F', fontWeight: 600 }}>
-                                        Voice Support
-                                    </Typography>
-                                    <Typography variant="body1" sx={{ color: 'rgba(255,255,255,0.9)' }}>
-                                        Learn at your own pace with voice-guided lessons and pronunciation practice
-                                    </Typography>
-                                </Paper>
-                            </Grid>
+                            {stats.map((stat, index) => (
+                                <Grid item xs={12} md={4} key={index}>
+                                    <motion.div
+                                        initial={{ opacity: 0, scale: 0.8 }}
+                                        whileInView={{ opacity: 1, scale: 1 }}
+                                        transition={{ duration: 0.5, delay: index * 0.2 }}
+                                        viewport={{ once: true }}
+                                    >
+                                        <StatsCard>
+                                            {stat.icon}
+                                            <Typography variant="h3" sx={{ color: stat.color, mb: 2, fontWeight: 700 }}>
+                                                {stat.number}
+                                            </Typography>
+                                            <Typography variant="h6" sx={{ mb: 2, color: '#FFD54F', fontWeight: 600 }}>
+                                                {stat.label}
+                                            </Typography>
+                                        </StatsCard>
+                                    </motion.div>
+                                </Grid>
+                            ))}
                         </Grid>
                     </motion.div>
                 </Container>
             </Box>
+
+            {/* 4. CALL TO ACTION SECTION */}
+            <Container maxWidth="lg" sx={{ py: 8 }}>
+                <motion.div
+                    initial={{ opacity: 0, y: 30 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.6 }}
+                    viewport={{ once: true }}
+                >
+                    <Box sx={{ textAlign: 'center' }}>
+                        <Typography
+                            variant="h2"
+                            sx={{ mb: 4, fontWeight: 700, color: 'primary.main' }}
+                        >
+                            Ready to Start Your Java Journey?
+                        </Typography>
+                        <Typography
+                            variant="h5"
+                            sx={{ mb: 6, color: 'text.secondary', fontWeight: 500, maxWidth: 600, mx: 'auto' }}
+                        >
+                            Join thousands of learners who have mastered Java programming with our comprehensive platform
+                        </Typography>
+
+                        <Box sx={{ display: 'flex', gap: 3, justifyContent: 'center', flexWrap: 'wrap' }}>
+                            <CTAButton
+                                variant="contained"
+                                size="large"
+                                startIcon={<PlayArrowIcon />}
+                                onClick={() => navigate('/course')}
+                            >
+                                Start Learning Now
+                            </CTAButton>
+                            <CTAButton
+                                variant="outlined"
+                                size="large"
+                                startIcon={<AnimationIcon />}
+                                onClick={() => navigate('/animation')}
+                                sx={{
+                                    borderColor: '#FFD54F',
+                                    color: '#FFD54F',
+                                    '&:hover': {
+                                        borderColor: '#FFC107',
+                                        color: '#FFC107',
+                                        bgcolor: 'rgba(255, 193, 7, 0.1)',
+                                    }
+                                }}
+                            >
+                                Explore Animations
+                            </CTAButton>
+                        </Box>
+                    </Box>
+                </motion.div>
+            </Container>
         </Box>
     );
 };
