@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import {
     Box,
     Container,
@@ -27,52 +27,70 @@ import CancelIcon from '@mui/icons-material/Cancel';
 import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
 import PsychologyIcon from '@mui/icons-material/Psychology';
 import TrendingUpIcon from '@mui/icons-material/TrendingUp';
+import CelebrationIcon from '@mui/icons-material/Celebration';
+import EmojiEmotionsIcon from '@mui/icons-material/EmojiEmotions';
 
 const PuzzleSection = styled(Box)(({ theme }) => ({
     padding: theme.spacing(8, 0),
     minHeight: '100vh',
     display: 'flex',
     alignItems: 'center',
-    background: 'linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%)',
+    background: 'linear-gradient(135deg, #0a2342 0%, #3a0ca3 50%, #00b4d8 100%)',
 }));
 
-const QuestionCard = styled(Card)(({ theme }) => ({
-    background: 'linear-gradient(135deg, #fff 0%, #f8f9fa 100%)',
-    borderRadius: 20,
-    boxShadow: '0 8px 32px rgba(0,0,0,0.1)',
-    border: '2px solid rgba(255,255,255,0.2)',
-    transition: 'all 0.3s ease',
+const QuestionCard = styled(motion(Card))(({ theme }) => ({
+    background: 'linear-gradient(135deg, #fff 0%, #e0e7ff 100%)',
+    borderRadius: 24,
+    boxShadow: '0 8px 32px rgba(58,12,163,0.10)',
+    border: '2px solid rgba(0,180,216,0.15)',
+    transition: 'all 0.3s cubic-bezier(.4,2,.6,1)',
     '&:hover': {
-        transform: 'translateY(-4px)',
-        boxShadow: '0 12px 40px rgba(0,0,0,0.15)',
+        transform: 'translateY(-6px) scale(1.02)',
+        boxShadow: '0 16px 48px rgba(58,12,163,0.18)',
     },
 }));
 
-const ProgressCard = styled(Paper)(({ theme }) => ({
+const ProgressCard = styled(motion(Paper))(({ theme }) => ({
     padding: theme.spacing(3),
-    borderRadius: 16,
-    background: 'linear-gradient(135deg, #FFC107, #FFB300)',
-    color: '#1A1A1A',
+    borderRadius: 20,
+    background: 'linear-gradient(135deg, #ffd60a, #ffc300)',
+    color: '#0a2342',
+    boxShadow: '0 4px 24px rgba(0,180,216,0.10)',
 }));
 
-const OptionButton = styled(Button)(({ theme, selected, correct, answered }) => ({
+const OptionButton = styled(motion(Button))(({ theme, selected, correct, answered }) => ({
     width: '100%',
     padding: theme.spacing(2),
-    borderRadius: 12,
+    borderRadius: 14,
     textAlign: 'left',
     justifyContent: 'flex-start',
-    marginBottom: theme.spacing(1),
-    transition: 'all 0.3s ease',
+    marginBottom: theme.spacing(1.5),
+    fontWeight: 600,
+    fontSize: '1.1rem',
+    transition: 'all 0.3s cubic-bezier(.4,2,.6,1)',
     background: selected
-        ? (correct ? 'linear-gradient(135deg, #4CAF50, #45a049)' : 'linear-gradient(135deg, #f44336, #d32f2f)')
-        : 'linear-gradient(135deg, #fff, #f8f9fa)',
-    color: selected ? '#fff' : '#1A1A1A',
-    border: selected ? 'none' : '2px solid #e0e0e0',
+        ? (correct ? 'linear-gradient(90deg, #00b4d8, #3a0ca3)' : 'linear-gradient(90deg, #f44336, #720026)')
+        : 'linear-gradient(90deg, #fff, #e0e7ff)',
+    color: selected ? '#fff' : '#0a2342',
+    border: selected ? 'none' : '2px solid #bdbdbd',
+    boxShadow: selected ? '0 2px 12px rgba(58,12,163,0.10)' : 'none',
     '&:hover': {
-        transform: selected ? 'none' : 'translateY(-2px)',
-        boxShadow: selected ? 'none' : '0 4px 12px rgba(0,0,0,0.1)',
+        transform: selected ? 'scale(1.01)' : 'translateY(-2px) scale(1.03)',
+        boxShadow: selected ? '0 4px 16px rgba(0,180,216,0.12)' : '0 4px 16px rgba(58,12,163,0.10)',
     },
 }));
+
+// Confetti effect (simple SVG burst)
+const Confetti = () => (
+    <motion.div
+        initial={{ opacity: 0, scale: 0.7 }}
+        animate={{ opacity: 1, scale: 1, rotate: [0, 10, -10, 0] }}
+        transition={{ duration: 0.8 }}
+        style={{ position: 'absolute', top: -40, left: '50%', transform: 'translateX(-50%)', zIndex: 10 }}
+    >
+        <CelebrationIcon sx={{ fontSize: 80, color: '#ffd60a' }} />
+    </motion.div>
+);
 
 const Puzzle = () => {
     const [currentQuestion, setCurrentQuestion] = useState(0);
@@ -81,6 +99,10 @@ const Puzzle = () => {
     const [score, setScore] = useState(0);
     const [showResult, setShowResult] = useState(false);
     const [difficulty, setDifficulty] = useState('beginner');
+    const [showConfetti, setShowConfetti] = useState(false);
+    const [showResultDialog, setShowResultDialog] = useState(false);
+    const scoreRef = useRef(null);
+    const [displayScore, setDisplayScore] = useState(0);
 
     const questions = {
         beginner: [
@@ -309,8 +331,33 @@ const Puzzle = () => {
         setShowResult(false);
     };
 
+    useEffect(() => {
+        if (showResult) {
+            setShowConfetti(true);
+            setTimeout(() => setShowConfetti(false), 2500);
+            setShowResultDialog(true);
+        }
+    }, [showResult]);
+
+    useEffect(() => {
+        if (showResult) {
+            let start = 0;
+            const end = score;
+            if (start === end) return;
+            let increment = end > 0 ? 1 : 0;
+            let timer = setInterval(() => {
+                start += increment;
+                setDisplayScore(start);
+                if (start === end) clearInterval(timer);
+            }, 80);
+            return () => clearInterval(timer);
+        } else {
+            setDisplayScore(0);
+        }
+    }, [showResult, score]);
+
     return (
-        <Box sx={{ pt: 8 }}>
+        <Box sx={{ minHeight: '100vh', width: '100%', display: 'flex', flexDirection: 'column', p: 0, m: 0 }}>
             <PuzzleSection>
                 <Container maxWidth="lg">
                     <motion.div
@@ -321,156 +368,181 @@ const Puzzle = () => {
                         <Typography
                             variant="h2"
                             align="center"
-                            sx={{ mb: 6, fontWeight: 700, color: 'primary.main' }}
+                            sx={{ mb: 6, fontWeight: 700, color: '#ffd60a', textShadow: '0 2px 8px #0a2342' }}
                         >
                             Test Your Java Knowledge
                         </Typography>
-
                         <Typography
                             variant="h5"
                             align="center"
-                            sx={{ mb: 8, color: 'text.secondary', fontWeight: 500 }}
+                            sx={{ mb: 8, color: '#e0e7ff', fontWeight: 500, textShadow: '0 1px 4px #3a0ca3' }}
                         >
                             Challenge yourself with adaptive puzzles based on your progress
                         </Typography>
-
                         <Grid container spacing={4}>
                             <Grid item xs={12} md={8}>
-                                <QuestionCard>
-                                    <CardContent sx={{ p: 4 }}>
-                                        <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
-                                            <PsychologyIcon sx={{ fontSize: 40, color: 'primary.main', mr: 2 }} />
-                                            <Box>
-                                                <Typography variant="h6" sx={{ fontWeight: 600, color: 'primary.main' }}>
-                                                    Question {currentQuestion + 1} of {currentQuestions.length}
-                                                </Typography>
-                                                <Chip
-                                                    label={difficulty.toUpperCase()}
-                                                    color="secondary"
-                                                    size="small"
-                                                    sx={{ fontWeight: 600 }}
-                                                />
-                                            </Box>
-                                        </Box>
-
-                                        <Typography variant="h5" sx={{ mb: 4, fontWeight: 600, lineHeight: 1.4 }}>
-                                            {currentQuestions[currentQuestion].question}
-                                        </Typography>
-
-                                        <FormControl component="fieldset" sx={{ width: '100%' }}>
-                                            <RadioGroup value={selectedAnswer} onChange={(e) => handleAnswerSelect(parseInt(e.target.value))}>
-                                                {currentQuestions[currentQuestion].options.map((option, index) => (
-                                                    <OptionButton
-                                                        key={index}
-                                                        selected={selectedAnswer === index}
-                                                        correct={currentQuestions[currentQuestion].correct === index}
-                                                        answered={answered}
-                                                        onClick={() => handleAnswerSelect(index)}
-                                                        startIcon={
-                                                            answered && (
-                                                                selectedAnswer === index ? (
-                                                                    currentQuestions[currentQuestion].correct === index ? (
-                                                                        <CheckCircleIcon />
-                                                                    ) : (
-                                                                        <CancelIcon />
-                                                                    )
-                                                                ) : currentQuestions[currentQuestion].correct === index ? (
-                                                                    <CheckCircleIcon />
-                                                                ) : null
-                                                            )
-                                                        }
-                                                    >
-                                                        {option}
-                                                    </OptionButton>
-                                                ))}
-                                            </RadioGroup>
-                                        </FormControl>
-
-                                        {answered && (
-                                            <motion.div
-                                                initial={{ opacity: 0, y: 20 }}
-                                                animate={{ opacity: 1, y: 0 }}
-                                                transition={{ duration: 0.5 }}
-                                            >
-                                                <Paper sx={{ p: 3, mt: 3, bgcolor: 'rgba(76, 175, 80, 0.1)', border: '1px solid #4CAF50' }}>
-                                                    <Typography variant="body1" sx={{ fontWeight: 500, color: '#2E7D32' }}>
-                                                        {currentQuestions[currentQuestion].explanation}
+                                <AnimatePresence mode="wait">
+                                    <QuestionCard
+                                        key={currentQuestion}
+                                        initial={{ opacity: 0, x: 80 }}
+                                        animate={{ opacity: 1, x: 0 }}
+                                        exit={{ opacity: 0, x: -80 }}
+                                        transition={{ duration: 0.5 }}
+                                    >
+                                        <CardContent sx={{ p: 4, position: 'relative' }}>
+                                            {showConfetti && <Confetti />}
+                                            <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
+                                                <PsychologyIcon sx={{ fontSize: 40, color: '#3a0ca3', mr: 2 }} />
+                                                <Box>
+                                                    <Typography variant="h6" sx={{ fontWeight: 600, color: '#3a0ca3' }}>
+                                                        Question {currentQuestion + 1} of {currentQuestions.length}
                                                     </Typography>
-                                                </Paper>
-                                            </motion.div>
-                                        )}
-
-                                        <Box sx={{ display: 'flex', gap: 2, mt: 4 }}>
-                                            <Button
-                                                variant="contained"
-                                                onClick={handleSubmit}
-                                                disabled={selectedAnswer === null || answered}
-                                                sx={{
-                                                    fontWeight: 600,
-                                                    bgcolor: 'primary.main',
-                                                    '&:hover': { bgcolor: 'primary.dark' }
-                                                }}
-                                            >
-                                                Submit Answer
-                                            </Button>
+                                                    <Chip
+                                                        label={difficulty.toUpperCase()}
+                                                        sx={{ fontWeight: 600, bgcolor: '#00b4d8', color: '#fff', letterSpacing: 1 }}
+                                                    />
+                                                </Box>
+                                            </Box>
+                                            <Typography variant="h5" sx={{ mb: 4, fontWeight: 600, lineHeight: 1.4, color: '#0a2342' }}>
+                                                {currentQuestions[currentQuestion].question}
+                                            </Typography>
+                                            <FormControl component="fieldset" sx={{ width: '100%' }}>
+                                                <RadioGroup value={selectedAnswer} onChange={(e) => handleAnswerSelect(parseInt(e.target.value))}>
+                                                    {currentQuestions[currentQuestion].options.map((option, index) => (
+                                                        <OptionButton
+                                                            key={index}
+                                                            selected={selectedAnswer === index}
+                                                            correct={currentQuestions[currentQuestion].correct === index}
+                                                            answered={answered}
+                                                            whileTap={{ scale: 0.97 }}
+                                                            whileHover={{ scale: 1.03, boxShadow: '0 4px 24px #00b4d833' }}
+                                                            onClick={() => handleAnswerSelect(index)}
+                                                            startIcon={
+                                                                answered && (
+                                                                    selectedAnswer === index ? (
+                                                                        currentQuestions[currentQuestion].correct === index ? (
+                                                                            <CheckCircleIcon />
+                                                                        ) : (
+                                                                            <CancelIcon />
+                                                                        )
+                                                                    ) : currentQuestions[currentQuestion].correct === index ? (
+                                                                        <CheckCircleIcon />
+                                                                    ) : null
+                                                                )
+                                                            }
+                                                        >
+                                                            {option}
+                                                        </OptionButton>
+                                                    ))}
+                                                </RadioGroup>
+                                            </FormControl>
                                             {answered && (
-                                                <Button
-                                                    variant="outlined"
-                                                    onClick={handleNext}
-                                                    sx={{
-                                                        fontWeight: 600,
-                                                        borderColor: 'secondary.main',
-                                                        color: 'secondary.main',
-                                                        '&:hover': {
-                                                            borderColor: 'secondary.dark',
-                                                            color: 'secondary.dark'
-                                                        }
-                                                    }}
+                                                <motion.div
+                                                    initial={{ opacity: 0, y: 20 }}
+                                                    animate={{ opacity: 1, y: 0 }}
+                                                    transition={{ duration: 0.5 }}
                                                 >
-                                                    {currentQuestion < currentQuestions.length - 1 ? 'Next Question' : 'See Results'}
-                                                </Button>
+                                                    <Paper sx={{ p: 3, mt: 3, bgcolor: 'rgba(0,180,216,0.08)', border: '2px solid #00b4d8' }}>
+                                                        <Typography variant="body1" sx={{ fontWeight: 500, color: '#3a0ca3' }}>
+                                                            {currentQuestions[currentQuestion].explanation}
+                                                        </Typography>
+                                                    </Paper>
+                                                </motion.div>
                                             )}
-                                        </Box>
-                                    </CardContent>
-                                </QuestionCard>
+                                            <Box sx={{ display: 'flex', gap: 2, mt: 4 }}>
+                                                <motion.div whileTap={{ scale: 0.97 }} whileHover={{ scale: 1.04 }}>
+                                                    <Button
+                                                        variant="contained"
+                                                        onClick={handleSubmit}
+                                                        disabled={selectedAnswer === null || answered}
+                                                        sx={{
+                                                            fontWeight: 700,
+                                                            bgcolor: '#3a0ca3',
+                                                            color: '#fff',
+                                                            px: 4,
+                                                            boxShadow: '0 2px 12px #3a0ca344',
+                                                            '&:hover': { bgcolor: '#0a2342', color: '#ffd60a' }
+                                                        }}
+                                                    >
+                                                        Submit Answer
+                                                    </Button>
+                                                </motion.div>
+                                                {answered && (
+                                                    <motion.div whileTap={{ scale: 0.97 }} whileHover={{ scale: 1.04 }}>
+                                                        <Button
+                                                            variant="outlined"
+                                                            onClick={handleNext}
+                                                            sx={{
+                                                                fontWeight: 700,
+                                                                borderColor: '#00b4d8',
+                                                                color: '#00b4d8',
+                                                                px: 4,
+                                                                '&:hover': {
+                                                                    borderColor: '#3a0ca3',
+                                                                    color: '#3a0ca3',
+                                                                    bgcolor: '#e0e7ff',
+                                                                }
+                                                            }}
+                                                        >
+                                                            {currentQuestion < currentQuestions.length - 1 ? 'Next Question' : 'See Results'}
+                                                        </Button>
+                                                    </motion.div>
+                                                )}
+                                            </Box>
+                                        </CardContent>
+                                    </QuestionCard>
+                                </AnimatePresence>
                             </Grid>
-
                             <Grid item xs={12} md={4}>
-                                <ProgressCard>
-                                    <Typography variant="h5" sx={{ mb: 3, fontWeight: 700 }}>
+                                <ProgressCard
+                                    initial={{ opacity: 0, y: 40 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    transition={{ duration: 0.7, delay: 0.2 }}
+                                >
+                                    <Typography variant="h5" sx={{ mb: 3, fontWeight: 700, color: '#0a2342' }}>
                                         Your Progress
                                     </Typography>
-
                                     <Box sx={{ mb: 3 }}>
                                         <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
                                             <Typography variant="body2">Progress</Typography>
                                             <Typography variant="body2">{Math.round(progress)}%</Typography>
                                         </Box>
-                                        <LinearProgress
-                                            variant="determinate"
-                                            value={progress}
-                                            sx={{
-                                                height: 8,
-                                                borderRadius: 4,
-                                                bgcolor: 'rgba(255,255,255,0.3)',
-                                                '& .MuiLinearProgress-bar': {
-                                                    bgcolor: '#1A1A1A',
-                                                }
-                                            }}
-                                        />
+                                        <motion.div
+                                            initial={{ width: 0 }}
+                                            animate={{ width: `${progress}%` }}
+                                            transition={{ duration: 0.7 }}
+                                            style={{ overflow: 'hidden' }}
+                                        >
+                                            <LinearProgress
+                                                variant="determinate"
+                                                value={progress}
+                                                sx={{
+                                                    height: 10,
+                                                    borderRadius: 5,
+                                                    bgcolor: 'rgba(255,255,255,0.3)',
+                                                    '& .MuiLinearProgress-bar': {
+                                                        bgcolor: '#3a0ca3',
+                                                    }
+                                                }}
+                                            />
+                                        </motion.div>
                                     </Box>
-
                                     <Box sx={{ mb: 3 }}>
-                                        <Typography variant="h6" sx={{ mb: 2, fontWeight: 600 }}>
-                                            Score: {score}/{currentQuestions.length}
+                                        <Typography variant="h6" sx={{ mb: 2, fontWeight: 700, color: '#3a0ca3' }}>
+                                            Score: <motion.span
+                                                initial={{ scale: 0.8 }}
+                                                animate={{ scale: 1.1 }}
+                                                transition={{ duration: 0.5 }}
+                                                style={{ color: '#3a0ca3' }}
+                                            >{displayScore}</motion.span>
+                                            <span style={{ color: '#3a0ca3' }}>/ {currentQuestions.length}</span>
                                         </Typography>
                                         <Typography variant="body2" sx={{ color: 'rgba(26,26,26,0.7)' }}>
                                             Correct answers so far
                                         </Typography>
                                     </Box>
-
                                     <FormControl fullWidth sx={{ mb: 3 }}>
-                                        <Typography variant="body2" sx={{ mb: 1, fontWeight: 600 }}>
+                                        <Typography variant="body2" sx={{ mb: 1, fontWeight: 600, color: '#0a2342' }}>
                                             Difficulty Level
                                         </Typography>
                                         <RadioGroup
@@ -480,26 +552,80 @@ const Puzzle = () => {
                                                 handleRestart();
                                             }}
                                         >
-                                            <FormControlLabel value="beginner" control={<Radio />} label="Beginner" />
-                                            <FormControlLabel value="intermediate" control={<Radio />} label="Intermediate" />
-                                            <FormControlLabel value="advanced" control={<Radio />} label="Advanced" />
+                                            <FormControlLabel value="beginner" control={<Radio sx={{ color: '#00b4d8' }} />} label="Beginner" />
+                                            <FormControlLabel value="intermediate" control={<Radio sx={{ color: '#3a0ca3' }} />} label="Intermediate" />
+                                            <FormControlLabel value="advanced" control={<Radio sx={{ color: '#ffd60a' }} />} label="Advanced" />
                                         </RadioGroup>
                                     </FormControl>
-
-                                    <Button
-                                        variant="outlined"
-                                        onClick={handleRestart}
-                                        fullWidth
-                                        sx={{
-                                            borderColor: '#1A1A1A',
-                                            color: '#1A1A1A',
-                                        }}
-                                    >
-                                        Restart Quiz
-                                    </Button>
+                                    <motion.div whileTap={{ scale: 0.97 }} whileHover={{ scale: 1.04 }}>
+                                        <Button
+                                            variant="outlined"
+                                            onClick={handleRestart}
+                                            fullWidth
+                                            sx={{
+                                                borderColor: '#0a2342',
+                                                color: '#0a2342',
+                                                fontWeight: 700,
+                                                '&:hover': {
+                                                    borderColor: '#3a0ca3',
+                                                    color: '#3a0ca3',
+                                                    bgcolor: '#e0e7ff',
+                                                }
+                                            }}
+                                        >
+                                            Restart Quiz
+                                        </Button>
+                                    </motion.div>
                                 </ProgressCard>
                             </Grid>
                         </Grid>
+                        {/* Result Dialog with animation */}
+                        <Dialog open={showResultDialog} onClose={() => setShowResultDialog(false)} maxWidth="xs" fullWidth>
+                            <DialogTitle sx={{ textAlign: 'center', bgcolor: '#3a0ca3', color: '#ffd60a', fontWeight: 700, fontSize: 28 }}>
+                                <motion.div
+                                    initial={{ scale: 0.7, rotate: -10 }}
+                                    animate={{ scale: 1.1, rotate: 0 }}
+                                    transition={{ type: 'spring', stiffness: 200 }}
+                                    style={{ display: 'inline-block' }}
+                                >
+                                    <EmojiEmotionsIcon sx={{ fontSize: 48, color: '#ffd60a', mb: -1 }} />
+                                </motion.div>
+                                <br />Quiz Complete!
+                            </DialogTitle>
+                            <DialogContent sx={{ textAlign: 'center', py: 4, bgcolor: '#e0e7ff' }}>
+                                <Typography variant="h4" sx={{ fontWeight: 700, color: '#3a0ca3', mb: 2 }}>
+                                    Score: {score} / {currentQuestions.length}
+                                </Typography>
+                                <Typography variant="h6" sx={{ color: '#00b4d8', mb: 2 }}>
+                                    {getPerformanceMessage()}
+                                </Typography>
+                                <motion.div
+                                    initial={{ opacity: 0, y: 20 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    transition={{ duration: 0.7 }}
+                                >
+                                    <CelebrationIcon sx={{ fontSize: 60, color: '#ffd60a' }} />
+                                </motion.div>
+                            </DialogContent>
+                            <DialogActions sx={{ justifyContent: 'center', bgcolor: '#e0e7ff', pb: 3 }}>
+                                <Button
+                                    variant="contained"
+                                    onClick={() => {
+                                        setShowResultDialog(false);
+                                        handleRestart();
+                                    }}
+                                    sx={{
+                                        bgcolor: '#00b4d8',
+                                        color: '#fff',
+                                        fontWeight: 700,
+                                        px: 4,
+                                        '&:hover': { bgcolor: '#3a0ca3', color: '#ffd60a' }
+                                    }}
+                                >
+                                    Try Again
+                                </Button>
+                            </DialogActions>
+                        </Dialog>
                     </motion.div>
                 </Container>
             </PuzzleSection>

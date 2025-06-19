@@ -1,7 +1,7 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { ThemeProvider, createTheme } from '@mui/material';
 import CssBaseline from '@mui/material/CssBaseline';
-import Navbar from './components/Navbar';
+import Layout from './components/Layout';
 import Home from './pages/Home';
 import Course from './pages/Course';
 import Animation from './pages/Animation';
@@ -91,14 +91,15 @@ function App() {
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <Router>
-        <Navbar />
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/course" element={<Course />} />
-          <Route path="/animation" element={<Animation />} />
-          <Route path="/puzzle" element={<Puzzle />} />
-          <Route path="/help" element={<Help />} />
-        </Routes>
+        <Layout>
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/course" element={<Course />} />
+            <Route path="/animation" element={<Animation />} />
+            <Route path="/puzzle" element={<Puzzle />} />
+            <Route path="/help" element={<Help />} />
+          </Routes>
+        </Layout>
       </Router>
     </ThemeProvider>
   );
