@@ -103,6 +103,23 @@ const Puzzle = () => {
     const [showResultDialog, setShowResultDialog] = useState(false);
     const scoreRef = useRef(null);
     const [displayScore, setDisplayScore] = useState(0);
+    const energeticMessages = {
+        correct: [
+            "Awesome! Keep it up!",
+            "Great job! You're on fire!",
+            "Correct! You're crushing it!",
+            "Fantastic! Keep going!",
+            "Brilliant! Next one!"
+        ],
+        incorrect: [
+            "Don't worry, try the next one!",
+            "Keep going, you can do it!",
+            "Almost there! Stay focused!",
+            "Keep your spirits high!",
+            "You'll get the next one!"
+        ]
+    };
+    const [energeticMsg, setEnergeticMsg] = useState("");
 
     const questions = {
         beginner: [
@@ -307,9 +324,13 @@ const Puzzle = () => {
     const handleSubmit = () => {
         if (selectedAnswer !== null) {
             setAnswered(true);
-            if (selectedAnswer === currentQuestions[currentQuestion].correct) {
+            let isCorrect = selectedAnswer === currentQuestions[currentQuestion].correct;
+            if (isCorrect) {
                 setScore(score + 1);
             }
+            // Pick a random energetic message
+            const msgArr = isCorrect ? energeticMessages.correct : energeticMessages.incorrect;
+            setEnergeticMsg(msgArr[Math.floor(Math.random() * msgArr.length)]);
         }
     };
 
@@ -318,6 +339,7 @@ const Puzzle = () => {
             setCurrentQuestion(currentQuestion + 1);
             setSelectedAnswer(null);
             setAnswered(false);
+            setEnergeticMsg(""); // Reset energetic message
         } else {
             setShowResult(true);
         }
@@ -379,7 +401,7 @@ const Puzzle = () => {
                         >
                             Challenge yourself with adaptive puzzles based on your progress
                         </Typography>
-                        <Grid container spacing={4}>
+                        <Grid container spacing={4} alignItems="flex-start">
                             <Grid item xs={12} md={8}>
                                 <AnimatePresence mode="wait">
                                     <QuestionCard
@@ -391,6 +413,11 @@ const Puzzle = () => {
                                     >
                                         <CardContent sx={{ p: 4, position: 'relative' }}>
                                             {showConfetti && <Confetti />}
+                                            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', mb: 2 }}>
+                                                <Typography variant="h6" sx={{ fontWeight: 700, color: '#3a0ca3', bgcolor: '#ffd60a', px: 2, py: 0.5, borderRadius: 2 }}>
+                                                    Score: {score} / {currentQuestions.length}
+                                                </Typography>
+                                            </Box>
                                             <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
                                                 <PsychologyIcon sx={{ fontSize: 40, color: '#3a0ca3', mr: 2 }} />
                                                 <Box>
@@ -446,6 +473,9 @@ const Puzzle = () => {
                                                         <Typography variant="body1" sx={{ fontWeight: 500, color: '#3a0ca3' }}>
                                                             {currentQuestions[currentQuestion].explanation}
                                                         </Typography>
+                                                        <Typography variant="h6" sx={{ mt: 2, fontWeight: 700, color: '#ffd60a', textAlign: 'center' }}>
+                                                            {energeticMsg}
+                                                        </Typography>
                                                     </Paper>
                                                 </motion.div>
                                             )}
@@ -494,89 +524,91 @@ const Puzzle = () => {
                                 </AnimatePresence>
                             </Grid>
                             <Grid item xs={12} md={4}>
-                                <ProgressCard
-                                    initial={{ opacity: 0, y: 40 }}
-                                    animate={{ opacity: 1, y: 0 }}
-                                    transition={{ duration: 0.7, delay: 0.2 }}
-                                >
-                                    <Typography variant="h5" sx={{ mb: 3, fontWeight: 700, color: '#0a2342' }}>
-                                        Your Progress
-                                    </Typography>
-                                    <Box sx={{ mb: 3 }}>
-                                        <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
-                                            <Typography variant="body2">Progress</Typography>
-                                            <Typography variant="body2">{Math.round(progress)}%</Typography>
+                                <Box sx={{ position: { md: 'sticky' }, top: { md: 32 }, zIndex: 2, minWidth: { md: 320 }, maxWidth: { md: 400 }, width: '100%', mx: 'auto' }}>
+                                    <ProgressCard
+                                        initial={{ opacity: 0, y: 40 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        transition={{ duration: 0.7, delay: 0.2 }}
+                                    >
+                                        <Typography variant="h5" sx={{ mb: 3, fontWeight: 700, color: '#0a2342' }}>
+                                            Your Progress
+                                        </Typography>
+                                        <Box sx={{ mb: 3 }}>
+                                            <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
+                                                <Typography variant="body2">Progress</Typography>
+                                                <Typography variant="body2">{Math.round(progress)}%</Typography>
+                                            </Box>
+                                            <motion.div
+                                                initial={{ width: 0 }}
+                                                animate={{ width: `${progress}%` }}
+                                                transition={{ duration: 0.7 }}
+                                                style={{ overflow: 'hidden' }}
+                                            >
+                                                <LinearProgress
+                                                    variant="determinate"
+                                                    value={progress}
+                                                    sx={{
+                                                        height: 10,
+                                                        borderRadius: 5,
+                                                        bgcolor: 'rgba(255,255,255,0.3)',
+                                                        '& .MuiLinearProgress-bar': {
+                                                            bgcolor: '#3a0ca3',
+                                                        }
+                                                    }}
+                                                />
+                                            </motion.div>
                                         </Box>
-                                        <motion.div
-                                            initial={{ width: 0 }}
-                                            animate={{ width: `${progress}%` }}
-                                            transition={{ duration: 0.7 }}
-                                            style={{ overflow: 'hidden' }}
-                                        >
-                                            <LinearProgress
-                                                variant="determinate"
-                                                value={progress}
+                                        <Box sx={{ mb: 3 }}>
+                                            <Typography variant="h6" sx={{ mb: 2, fontWeight: 700, color: '#3a0ca3' }}>
+                                                Score: <motion.span
+                                                    initial={{ scale: 0.8 }}
+                                                    animate={{ scale: 1.1 }}
+                                                    transition={{ duration: 0.5 }}
+                                                    style={{ color: '#3a0ca3' }}
+                                                >{showResult ? displayScore : score}</motion.span>
+                                                <span style={{ color: '#3a0ca3' }}>/ {currentQuestions.length}</span>
+                                            </Typography>
+                                            <Typography variant="body2" sx={{ color: 'rgba(26,26,26,0.7)' }}>
+                                                Correct answers so far
+                                            </Typography>
+                                        </Box>
+                                        <FormControl fullWidth sx={{ mb: 3 }}>
+                                            <Typography variant="body2" sx={{ mb: 1, fontWeight: 600, color: '#0a2342' }}>
+                                                Difficulty Level
+                                            </Typography>
+                                            <RadioGroup
+                                                value={difficulty}
+                                                onChange={(e) => {
+                                                    setDifficulty(e.target.value);
+                                                    handleRestart();
+                                                }}
+                                            >
+                                                <FormControlLabel value="beginner" control={<Radio sx={{ color: '#00b4d8' }} />} label="Beginner" />
+                                                <FormControlLabel value="intermediate" control={<Radio sx={{ color: '#3a0ca3' }} />} label="Intermediate" />
+                                                <FormControlLabel value="advanced" control={<Radio sx={{ color: '#ffd60a' }} />} label="Advanced" />
+                                            </RadioGroup>
+                                        </FormControl>
+                                        <motion.div whileTap={{ scale: 0.97 }} whileHover={{ scale: 1.04 }}>
+                                            <Button
+                                                variant="outlined"
+                                                onClick={handleRestart}
+                                                fullWidth
                                                 sx={{
-                                                    height: 10,
-                                                    borderRadius: 5,
-                                                    bgcolor: 'rgba(255,255,255,0.3)',
-                                                    '& .MuiLinearProgress-bar': {
-                                                        bgcolor: '#3a0ca3',
+                                                    borderColor: '#0a2342',
+                                                    color: '#0a2342',
+                                                    fontWeight: 700,
+                                                    '&:hover': {
+                                                        borderColor: '#3a0ca3',
+                                                        color: '#3a0ca3',
+                                                        bgcolor: '#e0e7ff',
                                                     }
                                                 }}
-                                            />
+                                            >
+                                                Restart Quiz
+                                            </Button>
                                         </motion.div>
-                                    </Box>
-                                    <Box sx={{ mb: 3 }}>
-                                        <Typography variant="h6" sx={{ mb: 2, fontWeight: 700, color: '#3a0ca3' }}>
-                                            Score: <motion.span
-                                                initial={{ scale: 0.8 }}
-                                                animate={{ scale: 1.1 }}
-                                                transition={{ duration: 0.5 }}
-                                                style={{ color: '#3a0ca3' }}
-                                            >{displayScore}</motion.span>
-                                            <span style={{ color: '#3a0ca3' }}>/ {currentQuestions.length}</span>
-                                        </Typography>
-                                        <Typography variant="body2" sx={{ color: 'rgba(26,26,26,0.7)' }}>
-                                            Correct answers so far
-                                        </Typography>
-                                    </Box>
-                                    <FormControl fullWidth sx={{ mb: 3 }}>
-                                        <Typography variant="body2" sx={{ mb: 1, fontWeight: 600, color: '#0a2342' }}>
-                                            Difficulty Level
-                                        </Typography>
-                                        <RadioGroup
-                                            value={difficulty}
-                                            onChange={(e) => {
-                                                setDifficulty(e.target.value);
-                                                handleRestart();
-                                            }}
-                                        >
-                                            <FormControlLabel value="beginner" control={<Radio sx={{ color: '#00b4d8' }} />} label="Beginner" />
-                                            <FormControlLabel value="intermediate" control={<Radio sx={{ color: '#3a0ca3' }} />} label="Intermediate" />
-                                            <FormControlLabel value="advanced" control={<Radio sx={{ color: '#ffd60a' }} />} label="Advanced" />
-                                        </RadioGroup>
-                                    </FormControl>
-                                    <motion.div whileTap={{ scale: 0.97 }} whileHover={{ scale: 1.04 }}>
-                                        <Button
-                                            variant="outlined"
-                                            onClick={handleRestart}
-                                            fullWidth
-                                            sx={{
-                                                borderColor: '#0a2342',
-                                                color: '#0a2342',
-                                                fontWeight: 700,
-                                                '&:hover': {
-                                                    borderColor: '#3a0ca3',
-                                                    color: '#3a0ca3',
-                                                    bgcolor: '#e0e7ff',
-                                                }
-                                            }}
-                                        >
-                                            Restart Quiz
-                                        </Button>
-                                    </motion.div>
-                                </ProgressCard>
+                                    </ProgressCard>
+                                </Box>
                             </Grid>
                         </Grid>
                         {/* Result Dialog with animation */}
