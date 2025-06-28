@@ -37,20 +37,29 @@ const palette = {
     error: '#F44336'
 };
 
-const CoursePageContainer = styled(Box)({
+const CoursePageContainer = styled(Box)(({ theme }) => ({
     display: 'flex',
     flexDirection: 'row',
     alignItems: 'flex-start',
     width: '100%',
     gap: '2rem',
-});
+    [theme.breakpoints.down('sm')]: {
+        flexDirection: 'column',
+        gap: '1rem',
+    },
+}));
 
-const ContentContainer = styled(Box)({
+const ContentContainer = styled(Box)(({ theme }) => ({
     flex: 1,
     height: 'calc(100vh - 80px)', // Adjust based on your header height
     overflowY: 'auto',
     paddingRight: '1rem',
-});
+    [theme.breakpoints.down('sm')]: {
+        height: 'auto',
+        paddingRight: 0,
+        paddingLeft: 0,
+    },
+}));
 
 const MainContainer = styled(Box)(({ theme }) => ({
     minHeight: '100vh',
@@ -61,6 +70,11 @@ const MainContainer = styled(Box)(({ theme }) => ({
     margin: 0,
     width: '100%',
     background: palette.background,
+    [theme.breakpoints.down('sm')]: {
+        paddingTop: theme.spacing(6),
+        paddingLeft: theme.spacing(1),
+        paddingRight: theme.spacing(1),
+    },
 }));
 
 const Sidebar = styled(Paper)(({ theme }) => ({
@@ -76,7 +90,7 @@ const Sidebar = styled(Paper)(({ theme }) => ({
     top: '20px', // Adjust as needed
     maxHeight: 'calc(100vh - 120px)',
     overflowY: 'auto',
-    [theme.breakpoints.down('md')]: {
+    [theme.breakpoints.down('sm')]: {
         position: 'relative',
         width: '100%',
         minWidth: '100%',

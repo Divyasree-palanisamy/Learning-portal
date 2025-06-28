@@ -93,8 +93,9 @@ const QuizHeaderBox = styled(Box)(({ theme }) => ({
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'flex-start',
-    [theme.breakpoints.down('md')]: {
-        padding: theme.spacing(2, 1.5),
+    [theme.breakpoints.down('sm')]: {
+        padding: theme.spacing(1.5, 2),
+        marginBottom: theme.spacing(2),
     },
 }));
 
@@ -104,25 +105,27 @@ const QuizMainRow = styled(Box)(({ theme }) => ({
     alignItems: 'flex-start',
     width: '100%',
     gap: theme.spacing(2),
-    [theme.breakpoints.down('md')]: {
+    [theme.breakpoints.down('sm')]: {
         flexDirection: 'column',
-        gap: theme.spacing(3),
+        gap: theme.spacing(2),
     },
 }));
 
 const LeftColumn = styled(Box)(({ theme }) => ({
     flex: 3,
     marginLeft: 0,
-    [theme.breakpoints.down('md')]: {
+    [theme.breakpoints.down('sm')]: {
         flex: 'unset',
+        width: '100%',
     },
 }));
 
 const RightColumn = styled(Box)(({ theme }) => ({
     flex: 1,
     marginRight: 0,
-    [theme.breakpoints.down('md')]: {
+    [theme.breakpoints.down('sm')]: {
         flex: 'unset',
+        width: '100%',
     },
 }));
 
@@ -1233,8 +1236,8 @@ const Puzzle = () => {
     return (
         <Box sx={{ minHeight: '100vh', width: '100%', display: 'flex', flexDirection: 'column', p: 0, m: 0 }}>
             <PuzzleSection>
-                <Container maxWidth="md">
-                    <Box sx={{ mb: 4, display: 'flex', flexWrap: 'wrap', gap: 2, justifyContent: 'center' }}>
+                <Container maxWidth="lg" sx={{ px: { xs: 2, sm: 3, md: 4 } }}>
+                    <Box sx={{ mb: 4, display: 'flex', flexWrap: 'wrap', gap: { xs: 1, sm: 2 }, justifyContent: 'center' }}>
                         {quizTopics.map(topic => (
                             <Button
                                 key={topic.key}
@@ -1251,9 +1254,9 @@ const Puzzle = () => {
                                 sx={{
                                     fontWeight: 700,
                                     borderRadius: 8,
-                                    fontSize: '1.08rem',
-                                    px: 3,
-                                    py: 1.2,
+                                    fontSize: { xs: '0.9rem', sm: '1.08rem' },
+                                    px: { xs: 2, sm: 3 },
+                                    py: { xs: 1, sm: 1.2 },
                                     letterSpacing: 0.5,
                                     color: selectedTopic === topic.key ? '#23235B' : '#FFD54F',
                                     background: selectedTopic === topic.key ? 'linear-gradient(90deg, #FFD54F, #FFC107)' : 'rgba(255,255,255,0.08)',
@@ -1369,7 +1372,15 @@ const Puzzle = () => {
                             </AnimatePresence>
                         </LeftColumn>
                         <RightColumn>
-                            <Box sx={{ position: { md: 'sticky' }, top: { md: 32 }, zIndex: 2, minWidth: { md: 320 }, maxWidth: { md: 400 }, width: '100%', mx: 'auto' }}>
+                            <Box sx={{
+                                position: { sm: 'sticky' },
+                                top: { sm: 32 },
+                                zIndex: 2,
+                                minWidth: { sm: 280, md: 320 },
+                                maxWidth: { sm: '100%', md: 400 },
+                                width: '100%',
+                                mx: 'auto'
+                            }}>
                                 <ProgressCard
                                     initial={{ opacity: 0, y: 40 }}
                                     animate={{ opacity: 1, y: 0 }}

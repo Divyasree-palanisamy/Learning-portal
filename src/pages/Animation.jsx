@@ -28,6 +28,11 @@ const MainContainer = styled(Box)(({ theme }) => ({
     margin: 0,
     width: '100%',
     background: 'none',
+    [theme.breakpoints.down('sm')]: {
+        paddingTop: theme.spacing(6),
+        paddingLeft: theme.spacing(1),
+        paddingRight: theme.spacing(1),
+    },
 }));
 
 const CodeBlock = styled(Box)(({ theme }) => ({
@@ -43,6 +48,13 @@ const CodeBlock = styled(Box)(({ theme }) => ({
     minWidth: 320,
     maxWidth: 500,
     boxShadow: '0 8px 32px rgba(0,0,0,0.10)',
+    [theme.breakpoints.down('sm')]: {
+        fontSize: '0.9rem',
+        padding: theme.spacing(2),
+        minWidth: '100%',
+        maxWidth: '100%',
+        overflowX: 'auto',
+    },
     '&::before': {
         content: '""',
         position: 'absolute',
@@ -67,6 +79,11 @@ const OutputBlock = styled(Paper)(({ theme }) => ({
     boxShadow: '0 4px 16px rgba(35,35,91,0.10)',
     marginTop: theme.spacing(2),
     marginBottom: theme.spacing(2),
+    [theme.breakpoints.down('sm')]: {
+        fontSize: '0.9rem',
+        padding: theme.spacing(1.5, 2),
+        minHeight: 50,
+    },
 }));
 
 const topics = [
