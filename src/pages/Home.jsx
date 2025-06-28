@@ -118,7 +118,7 @@ const Home = () => {
         <Box sx={{ minHeight: '100vh', width: '100%', display: 'flex', flexDirection: 'column', p: 0, m: 0 }}>
             {/* Hero Section */}
             <HeroSection>
-                <Container>
+                <Container maxWidth={false} disableGutters sx={{ px: { xs: 0, sm: 2 } }}>
                     <Grid container spacing={4} alignItems="center" justifyContent="center">
                         <Grid item xs={12} md={7}>
                             <motion.div initial={{ opacity: 0, x: -50 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.8 }}>
@@ -145,7 +145,7 @@ const Home = () => {
             </HeroSection>
             {/* Features Section */}
             <Box sx={{ py: 8 }}>
-                <Container>
+                <Container maxWidth={false} disableGutters sx={{ px: { xs: 0, sm: 2 } }}>
                     <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }} viewport={{ once: true }}>
                         <Typography variant="h2" align="center" sx={{ mb: 6, fontWeight: 700, color: '#FFD54F' }}>
                             Why Choose JavaLearn?
@@ -172,7 +172,7 @@ const Home = () => {
             </Box>
             {/* Statistics Section */}
             <Box sx={{ background: 'linear-gradient(135deg, #6A1B9A 0%, #8E24AA 50%, #AB47BC 100%)', py: 8, color: '#fff', position: 'relative' }}>
-                <Container sx={{ position: 'relative', zIndex: 1 }}>
+                <Container maxWidth={false} disableGutters sx={{ position: 'relative', zIndex: 1, px: { xs: 0, sm: 2 } }}>
                     <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }} viewport={{ once: true }}>
                         <Typography variant="h2" align="center" sx={{ mb: 6, fontWeight: 700, color: '#FFD54F', textShadow: '2px 2px 4px rgba(0,0,0,0.3)' }}>
                             Learning Statistics
@@ -197,7 +197,7 @@ const Home = () => {
             </Box>
             {/* Call to Action Section */}
             <Box sx={{ py: 8 }}>
-                <Container>
+                <Container maxWidth={false} disableGutters sx={{ px: { xs: 0, sm: 2 } }}>
                     <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }} viewport={{ once: true }}>
                         <Box sx={{ textAlign: 'center' }}>
                             <Typography variant="h2" sx={{ mb: 4, fontWeight: 700, color: '#FFD54F' }}>
